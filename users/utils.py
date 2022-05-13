@@ -1,7 +1,15 @@
 from django.http import JsonResponse
 
+from users.models import User
 
-def return_one_user(user):
+
+def return_one_user(user: User) -> JsonResponse:
+    """
+    Функция выдачи во вьюшке одного пользователя
+
+    :param user: Пользователь, полученный из БД
+    :return: JsonResponse Django
+    """
     return JsonResponse({
         "id": user.id,
         "username": user.username,
