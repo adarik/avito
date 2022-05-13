@@ -1,6 +1,7 @@
 import json
 
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -18,6 +19,7 @@ class UserView(ListView):
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
 
+        self.object_list = self.object_list.annotate(total_ads=Count('ad')).select_related()
         paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
         page_number = request.GET.get('page')
         page_object = paginator.get_page(page_number)
@@ -31,6 +33,7 @@ class UserView(ListView):
                 'username': user.username,
                 'role': user.role,
                 'age': user.age,
+                'total_ads': user.total_ads,
                 'location': list(map(str, user.location.all())),
             })
 
