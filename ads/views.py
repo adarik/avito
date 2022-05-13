@@ -1,5 +1,6 @@
 import json
 
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -8,6 +9,7 @@ from django.views.generic import DetailView, ListView, CreateView, UpdateView, D
 
 from ads.models import Ad, Category
 from ads.utils import return_one_ad, return_one_category
+from config import settings
 from users.models import User
 
 
@@ -24,8 +26,12 @@ class AdView(ListView):
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
 
+        paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
+        page_number = request.GET.get('page')
+        page_object = paginator.get_page(page_number)
+
         ads = []
-        for ad in self.object_list:
+        for ad in page_object:
             ads.append(
                 {
                     'id': ad.id,
@@ -40,7 +46,13 @@ class AdView(ListView):
                 }
             )
 
-        return JsonResponse(ads, safe=False)
+        response = {
+            'items': ads,
+            'num_pages': paginator.num_pages,
+            'total': paginator.count,
+        }
+
+        return JsonResponse(response, safe=False)
 
 
 class AdDetailView(DetailView):
@@ -128,14 +140,25 @@ class CategoryView(ListView):
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
 
-        response = []
-        for category in self.object_list:
-            response.append(
+        paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
+        page_number = request.GET.get("page")
+        page_object = paginator.get_page(page_number)
+
+        categories = []
+        for category in page_object:
+            categories.append(
                 {
                     'id': category.id,
                     'name': category.name,
                 }
             )
+
+        response = {
+            'items': categories,
+            'total': paginator.count,
+            'num_pages': paginator.num_pages,
+        }
+
         return JsonResponse(response, safe=False)
 
 
