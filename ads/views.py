@@ -27,7 +27,7 @@ class AdView(ListView):
         super().get(request, *args, **kwargs)
 
         paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
-        page_number = request.GET.get('page')
+        page_number = request.GET.get('page', None)
         page_object = paginator.get_page(page_number)
 
         ads = []
@@ -72,8 +72,8 @@ class AdCreateView(CreateView):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        author = get_object_or_404(User, data['author_id'])
-        category = get_object_or_404(Category, data['category'])
+        author = get_object_or_404(User, pk=data['author_id'])
+        category = get_object_or_404(Category, pk=data['category_id'])
 
         ad = Ad.objects.create(
             name=data["name"],
@@ -100,8 +100,8 @@ class AdUpdateView(UpdateView):
         self.object.price = data['price']
         self.object.description = data['description']
 
-        self.object.author = get_object_or_404(User, data["author_id"])  # TODO Не работает. Задал вопрос в СЛАК
-        self.object.category = get_object_or_404(Category, data["category_id"])
+        self.object.author = get_object_or_404(User, pk=data["author_id"]) 
+        self.object.category = get_object_or_404(Category, pk=data["category_id"])
 
         self.object.save()
 
@@ -141,7 +141,7 @@ class CategoryView(ListView):
         super().get(request, *args, **kwargs)
 
         paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
-        page_number = request.GET.get("page")
+        page_number = request.GET.get("page", None)
         page_object = paginator.get_page(page_number)
 
         categories = []
