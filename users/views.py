@@ -6,9 +6,11 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from rest_framework.generics import CreateAPIView
 
 from config import settings
 from users.models import User, Location
+from users.serializers import UserCreateSerializer
 from users.utils import return_one_user
 
 
@@ -55,28 +57,9 @@ class UserDetailView(DetailView):
         return return_one_user(self.object)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UserCreateView(CreateView):
-    model = User
-    fields = ['first_name', 'last_name', 'username', 'password', 'role', 'age', 'location']
-
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-
-        user = User.objects.create(
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            username=data['username'],
-            password=data['password'],
-            role=data['role'],
-            age=data['age'],
-        )
-
-        for location_name in data['location']:
-            location, _ = Location.objects.get_or_create(name=location_name)
-            user.location.add(location)
-
-        return return_one_user(user)
+class UserCreateView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
 
 
 @method_decorator(csrf_exempt, name='dispatch')
