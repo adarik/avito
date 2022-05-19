@@ -1,60 +1,19 @@
-import json
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.viewsets import ModelViewSet
 
-from django.core.paginator import Paginator
-from django.db.models import Count
-from django.http import JsonResponse
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from rest_framework.generics import CreateAPIView
-
-from config import settings
 from users.models import User, Location
-from users.serializers import UserCreateSerializer
-from users.utils import return_one_user
+from users.serializers import UserCreateSerializer, UserSerializer, UserUpdateSerializer, UserDeleteSerializer, \
+    LocationSerializer
 
 
-class UserView(ListView):
-    models = User
+class UserView(ListAPIView):
     queryset = User.objects.all()
-
-    def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
-
-        self.object_list = self.object_list.annotate(total_ads=Count('ad')).select_related()
-        paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
-        page_number = request.GET.get('page')
-        page_object = paginator.get_page(page_number)
-
-        users = []
-        for user in page_object:
-            users.append({
-                'id': user.id,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'username': user.username,
-                'role': user.role,
-                'age': user.age,
-                'total_ads': user.total_ads,
-                'location': list(map(str, user.location.all())),
-            })
-
-        response = {
-            'items': users,
-            'total': paginator.count,
-            'num_pages': paginator.num_pages,
-        }
-
-        return JsonResponse(response, safe=False)
+    serializer_class = UserSerializer
 
 
-class UserDetailView(DetailView):
-    model = User
-
-    def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
-
-        return return_one_user(self.object)
+class UserDetailView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class UserCreateView(CreateAPIView):
@@ -62,42 +21,16 @@ class UserCreateView(CreateAPIView):
     serializer_class = UserCreateSerializer
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UserUpdateView(UpdateView):
-    model = User
-    fields = ['first_name', 'last_name', 'username', 'password', 'role', 'age', 'location']
-
-    def patch(self, request, *args, **kwargs):
-        super().post(request, *args, **kwargs)
-
-        data = json.loads(request.body)
-
-        self.object.first_name = data['first_name']
-        self.object.last_name = data['last_name']
-        self.object.username = data['username']
-        self.object.password = data['password']
-        self.object.age = data['age']
-
-        for location_name in data['location']:
-            location, _ = Location.objects.get_or_create(name=location_name)
-            self.object.location.add(location)
-
-        self.object.save()
-
-        return return_one_user(self.object)
+class UserUpdateView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserUpdateSerializer
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UserDeleteView(DeleteView):
-    model = User
-    success_url = '/'
+class UserDeleteView(DestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserDeleteSerializer
 
-    def delete(self, request, *args, **kwargs):
-        super().delete(request, *args, **kwargs)
 
-        return JsonResponse(
-            {
-                'satus': 'ok'
-            },
-            status=200
-        )
+class LocationViewSet(ModelViewSet):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
