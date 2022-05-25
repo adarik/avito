@@ -6,10 +6,11 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from ads.models import Ad, Category
+from ads.permissions import AdEditPermission
 from ads.serializers import AdSerializer
 from ads.utils import return_one_ad, return_one_category
 from config import settings
@@ -108,36 +109,16 @@ class AdCreateView(CreateView):
         return return_one_ad(ad)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class AdUpdateView(UpdateView):
-    model = Ad
-    fields = ["name", "author", "price", "description", "is_published", "category"]
-
-    def patch(self, request, *args, **kwargs):
-        super().post(request, *args, **kwargs)
-
-        data = json.loads(request.body)
-        self.object.name = data['name']
-        self.object.price = data['price']
-        self.object.description = data['description']
-
-        self.object.author = get_object_or_404(User, pk=data["author_id"])
-        self.object.category = get_object_or_404(Category, pk=data["category_id"])
-
-        self.object.save()
-
-        return return_one_ad(self.object)
+class AdUpdateView(UpdateAPIView):
+    queryset = Ad.objects.all()
+    serializer_class = AdSerializer
+    permission_classes = [IsAuthenticated, AdEditPermission]
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class AdDeleteView(DeleteView):
-    model = Ad
-    success_url = '/'
-
-    def delete(self, request, *args, **kwargs):
-        super().delete(request, *args, **kwargs)
-
-        return JsonResponse({'status': 'ok'}, status=200)
+class AdDeleteView(DestroyAPIView):
+    queryset = Ad.objects.all()
+    serializer_class = AdSerializer
+    permission_classes = [IsAuthenticated, AdEditPermission]
 
 
 @method_decorator(csrf_exempt, name='dispatch')
