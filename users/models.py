@@ -30,13 +30,13 @@ class User(AbstractUser):
     # username = models.CharField(max_length=30)
     # password = models.CharField(max_length=50)
     role = models.CharField(max_length=9, choices=ROLES, default=MEMBER)
-    age = models.PositiveIntegerField()
+    age = models.PositiveIntegerField(null=True)
     location = models.ManyToManyField(Location)
 
-    def save(self, *args, **kwargs):
-        self.set_password(self.password)
-
-        super().save()
+    # def save(self, *args, **kwargs):
+    #     self.set_password(self.password)
+    #
+    #     super().save()
 
     class Meta:
         ordering = ['username']
