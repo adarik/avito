@@ -15,4 +15,9 @@ urlpatterns = [
     path('cat/<int:pk>/', views.CategoryDetailView.as_view()),
     path('cat/<int:pk>/update/', views.CategoryUpdateView.as_view()),
     path('cat/<int:pk>/delete/', views.CategoryDeleteView.as_view()),
+    path('selection/', views.SelectionListView.as_view()),
+    path('selection/<int:pk>/', views.SelectionRetrieveView.as_view()),
+    path('selection/<int:pk>/update/', views.SelectionUpdateView.as_view()),
+    path('selection/<int:pk>/create/', views.SelectionCreateView.as_view()),
+    path('selection/<int:pk>/delete/', views.SelectionDestroyView.as_view()),
 ]
