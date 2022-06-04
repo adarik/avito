@@ -130,6 +130,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 TOTAL_ON_PAGE = 10
 
+USER_MIN_AGE = 9
+
+RESTRICTED_EMAIL_DOMAIN = 'rambler.ru'
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',

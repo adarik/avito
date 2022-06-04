@@ -11,7 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from ads.models import Ad, Category, Selection
 from ads.permissions import AdEditPermission, SelectionEditPermission
-from ads.serializers import AdSerializer, SelectionListSerializer, SelectionDetailSerializer, SelectionSerializer
+from ads.serializers import AdSerializer, SelectionListSerializer, SelectionDetailSerializer, SelectionSerializer, \
+    AdCreateSerializer
 from ads.utils import return_one_ad, return_one_category
 from config import settings
 from users.models import User
@@ -86,27 +87,9 @@ class AdDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class AdCreateView(CreateView):
-    model = Ad
-    fields = ["name", "author", "price", "description", "is_published", "category"]
-
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-
-        author = get_object_or_404(User, pk=data['author_id'])
-        category = get_object_or_404(Category, pk=data['category_id'])
-
-        ad = Ad.objects.create(
-            name=data["name"],
-            author=author,
-            price=data["price"],
-            description=data["description"],
-            is_published=data["is_published"],
-            category=category,
-        )
-
-        return return_one_ad(ad)
+class AdCreateView(CreateAPIView):
+    queryset = Ad.objects.all()
+    serializer_class = AdCreateSerializer
 
 
 class AdUpdateView(UpdateAPIView):

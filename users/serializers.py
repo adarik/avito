@@ -31,7 +31,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = "__all__"
+        exclude = ['password']
 
     def is_valid(self, raise_exception=False):
         self._location = self.initial_data.pop('location')
