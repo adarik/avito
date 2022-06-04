@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from ads.models import Ad, Selection
+from ads.validators import NotTrueValidator
 
 
 class AdSerializer(serializers.ModelSerializer):
@@ -12,6 +13,14 @@ class AdSerializer(serializers.ModelSerializer):
         slug_field='name',
         read_only=True,
     )
+
+    class Meta:
+        model = Ad
+        fields = '__all__'
+
+
+class AdCreateSerializer(serializers.ModelSerializer):
+    is_published = serializers.BooleanField(validators=[NotTrueValidator()])
 
     class Meta:
         model = Ad

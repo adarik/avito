@@ -17,7 +17,7 @@ def check_birth_date(value: date) -> None:
 
     if difference < USER_MIN_AGE:
         raise ValidationError(
-            f"Your age is {value}. You must be an 9 years or older for register"
+            f"You was born {value}. You must be an 9 years or older for register"
         )
 
 
@@ -25,11 +25,10 @@ def check_email_domain(value: str) -> None:
     """
     Валидатор, который проверяет доменное имя email пользователя на соответствие требованиям сервиса.
 
-    :param value: Значение email, которое передал пользователь
+    :param value: Значение email, которое передал пользователь.
     :return: None
     """
     if RESTRICTED_EMAIL_DOMAIN in value:
         raise ValidationError(
             f"Your email domain is {RESTRICTED_EMAIL_DOMAIN}. Try to use another email."
         )
-

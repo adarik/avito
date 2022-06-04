@@ -31,12 +31,7 @@ class User(AbstractUser):
     age = models.PositiveIntegerField(null=True)
     location = models.ManyToManyField(Location)
     birth_date = models.DateField(validators=[check_birth_date], null=True)
-    email = models.EmailField(unique=True, validators=[check_email_domain])
-
-    def save(self, *args, **kwargs):
-        self.set_password(self.password)
-
-        super().save()
+    email = models.EmailField(unique=True, validators=[check_email_domain], null=True)
 
     class Meta:
         ordering = ['username']
