@@ -1,0 +1,28 @@
+[
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "first_name": "Владимир",
+      "last_name": "Ленин",
+      "username": "leninv",
+      "password": "",
+      "role": "member",
+      "age": 20,
+      "location": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "first_name": "Ульяна",
+      "last_name": "Онкина",
+      "username": "uonkina",
+      "password": "",
+      "role": "member",
+      "age": 33,
+      "location": []
+    }
+  }
+]

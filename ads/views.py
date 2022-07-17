@@ -13,12 +13,6 @@ from config import settings
 from users.models import User
 
 
-def main_page(request):
-    return JsonResponse({
-        "status": "ok"
-    })
-
-
 class AdView(ListView):
     model = Ad
     queryset = Ad.objects.all()

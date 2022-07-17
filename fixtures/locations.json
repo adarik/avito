@@ -1,0 +1,20 @@
+[
+  {
+    "model": "users.location",
+    "pk": 1,
+    "fields": {
+      "name": "Москва",
+      "lat": null,
+      "lng": null
+    }
+  },
+  {
+    "model": "users.location",
+    "pk": 1,
+    "fields": {
+      "name": "Горск",
+      "lat": null,
+      "lng": null
+    }
+  }
+]
